@@ -88,8 +88,7 @@ function init() {
     // timer
     // Modal 
     const btnOpenModal = document.querySelectorAll('[data-modal]'),
-        modalWinow = document.querySelector('.modal'),
-        btnClosoModal = document.querySelectorAll('[data-close]');
+          modalWinow = document.querySelector('.modal');
     function widthScrollBar() {
         return window.innerWidth - document.documentElement.clientWidth;
     }
@@ -108,11 +107,8 @@ function init() {
     btnOpenModal.forEach(item => {
         item.addEventListener('click', openModalWin);
     });
-    btnClosoModal.forEach(item => {
-        item.addEventListener('click', closeModalWin);
-    });
     modalWinow.addEventListener('click', event => {
-        if (event.target.classList == "modal") {
+        if (event.target.classList == "modal" || event.target.getAttribute('data-close') === '') {
             closeModalWin();
         }
     })
@@ -193,4 +189,91 @@ function init() {
          21,
         '.menu .container'
     ).render();
+
+    const allForms = document.querySelectorAll('form');
+    const messages = {
+        loade: "./icons/spinner.svg",
+        success: "Спасибо! Все булочка...",
+        failed: "Упс, ща рвонет..."
+    }
+    allForms.forEach(item => dataSend(item));
+    function dataSend(form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            let statusMesseg = document.createElement('img');
+            statusMesseg.src = messages.loade;
+            statusMesseg.style.cssText = `
+             position: absolute;
+             display: block;
+             margin: 0 auto;
+            `;
+            form.append(statusMesseg);
+            // const request = new XMLHttpRequest();
+            // request.open('POST', '../server.php');
+            const formData = new FormData(form);
+            let objJSON = {};
+            formData.forEach((item, key) => {
+                objJSON[key] = item;
+            })
+
+            fetch('../server.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(objJSON),
+            }).then(data => data.text())
+                .then(data => {
+                console.log(data);
+                statusMesseg.remove();
+                showThanksModal(messages.success);
+            }).catch(() => {
+                statusMesseg.remove();
+                showThanksModal(messages.failed);
+            }).finally(() => {
+                form.reset();
+            })
+            // JSON
+            // let objJSON = {};
+            // formData.forEach((item, key) => {
+            //     objJSON[key] = item;
+            // })
+            // let json = JSON.stringify(objJSON);
+            // request.send(json);
+            // JSON
+            // request.send(formData);
+            // request.addEventListener('load', function (e) {
+            //     if (request.status === 200) {
+            //         form.reset();
+            //         statusMesseg.remove();
+            //         showThanksModal(messages.success);
+            //     } else {
+            //         statusMesseg.remove();
+            //         showThanksModal(messages.failed);;
+            //     }
+            // })
+        })
+    }
+
+    function showThanksModal(message) {
+        const prevModalDailog = document.querySelector('.modal__dialog');
+        prevModalDailog.classList.add('hide');
+        prevModalDailog.classList.remove('show');
+        openModalWin();
+        let tankContent = document.createElement('div');
+        tankContent.classList.add('modal__dialog');
+        tankContent.innerHTML = `
+        <div class="modal__content">
+        <div data-close class="modal__close">&times;</div>
+        <div class="modal__title">${message}</div>
+        </div>
+        `;
+        document.querySelector('.modal').append(tankContent);
+        setTimeout(() => {
+            tankContent.remove();
+            prevModalDailog.classList.add('show');
+            prevModalDailog.classList.remove('hide');
+            closeModalWin();
+        }, 4000)
+    }
 }
