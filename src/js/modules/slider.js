@@ -1,14 +1,14 @@
-function slider() {
+function slider({slideWrapper, slideCounter, prev, next, slidesAll, countNow, commCount, innerSlide}) {
       // Slider var_1
-    const sliderWrapper = document.querySelector('.offer__slider-wrapper');
-    const sliderCounter = document.querySelector('.offer__slider-counter');
-    const slideInner = sliderWrapper.querySelector('.offer__slider-inner');
-    const arrowPrev = sliderCounter.querySelector('.offer__slider-prev');
-    const arrowNext = sliderCounter.querySelector('.offer__slider-next');
-    const arrSlides = sliderWrapper.querySelectorAll('.offer__slide');
+    const sliderWrapper = document.querySelector(slideWrapper);
+    const sliderCounter = document.querySelector(slideCounter);
+    const slideInner = sliderWrapper.querySelector(innerSlide);
+    const arrowPrev = sliderCounter.querySelector(prev);
+    const arrowNext = sliderCounter.querySelector(next);
+    const arrSlides = sliderWrapper.querySelectorAll(slidesAll);
     const arrImg = [];
-    let currentCount = sliderCounter.querySelector('#current');
-    let allCount = sliderCounter.querySelector('#total');
+    let currentCount = sliderCounter.querySelector(countNow);
+    let allCount = sliderCounter.querySelector(commCount);
     let count = 1;
     let addN = 0;
     arrSlides.forEach((item, i) => {
